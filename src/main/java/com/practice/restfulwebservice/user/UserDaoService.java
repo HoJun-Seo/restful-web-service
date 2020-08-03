@@ -1,9 +1,12 @@
 package com.practice.restfulwebservice.user;
 
+import org.springframework.stereotype.Service;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+@Service // 해당 클래스의 역할을 알린다.
 public class UserDaoService {
     // 사용자 전체 목록 조회
     // 사용자 정보 추가
