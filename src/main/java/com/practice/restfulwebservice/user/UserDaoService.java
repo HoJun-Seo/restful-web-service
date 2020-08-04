@@ -30,7 +30,7 @@ public class UserDaoService {
 
     public User save(User user){
         if(user.getId() == null){
-            user.setId(++usersCount);
+            user.setId(++usersCount); // Id 의 값이 존재하지 않으면 전체 리스트 갯수에서 +1 을 하여 Id 값을 세팅해준다.
         }
         users.add(user);
         return user;
