@@ -65,4 +65,12 @@ public class UserController {
             throw  new UserNOTFoundException(String.format("ID[%s] not found", id));
         }
     }
+
+    @PutMapping("/users/{id}")
+    public void updateUser(@PathVariable int id){
+        User user = service.updateById(id);
+        if(user == null){
+            throw new UserNOTFoundException(String.format("ID[%s] not found", id));
+        }
+    }
 }
