@@ -1,13 +1,21 @@
 package com.practice.restfulwebservice.helloworld;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Locale;
 
 @RestController
 // RestController 를 사용하게 되면 반환되는 값이 response body 에 포함되지 않더라도 Java 의 배열 또는 컬렉션 같은 값으로 반환하게 되면 자동으로 Json 문서로 반환해주는 특징을 가진다.
 // Json 이 아닌 xml 형태로 반환하고자 한다면 xml 값을 사용하기 위한 라이브러리를 추가하면 된다.
 public class HelloWorldController {
+
+    @Autowired // 어노테이션을 통한 의존성 주입을 위해 사용하는 어노테이션, 현재 스프링 프레임워크에 등록되어 있는 Bean 들 중에서 같은 타입을 가지고 있는 Bean 을 자동으로 주입해주는 기능을 가지고 있다.
+    private MessageSource messageSource;
     // GET
     // /hello-world : uri(사용자에 의해 호출되는 end point)
     // @RequestMapping(method = RequestMethod.GET, path = "/hello-world")
@@ -31,5 +39,11 @@ public class HelloWorldController {
     public HelloWorldBean helloWorldBean(@PathVariable String name){ // Path Variable 로 사용하고자 하는 변수를 선언할 때는 앞에 @PathVariable 어노테이션을 붙여준다.
         //여기서 변수의 이름을 다르게 가져가고 싶다면 @PathVariable(value = "name") String another_value 와 같은 형식으로 파라미터를 작성해주면 된다.
         return new HelloWorldBean(String.format("Hello World, %s", name));
+    }
+
+    @GetMapping(path = "/hello-world-internationalized")
+    public String helloWorldInternationalized(@RequestHeader(name = "Accept-Language", required = false) Locale locale){
+        return messageSource.getMessage("greeting.message", null, locale);
+                // 만들었던 번들에서 어떤 키 값을 가지고 올 것인지, 만약 키 값이 parameter 를 가지고 있는 문자열 이라고 하면, 그 문자열을 채워주기 위한 두번째 파라미터를 선언해줘야 한다.
     }
 }
