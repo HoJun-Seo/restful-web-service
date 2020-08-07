@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
 
@@ -38,10 +39,11 @@ public class UserController {
         return user;
     }
     @PostMapping("/users")
-    public ResponseEntity<User> createUser(@RequestBody User user){ // 클라이언트로부터 form data type 이 아닌 json, xml 과 같이 object 형태의 데이터를 받기 위해서는 매개변수 타입에 @RequestBody 어노테이션을 선언해 주어야 한다.
+    public ResponseEntity<User> createUser(@Valid @RequestBody User user){ // 클라이언트로부터 form data type 이 아닌 json, xml 과 같이 object 형태의 데이터를 받기 위해서는 매개변수 타입에 @RequestBody 어노테이션을 선언해 주어야 한다.
         // 현재 전달받고자 하는 데이터는 RequestBody 형식의 역할을 한다.
         // 클라이언트에서 전달하는 데이터 포맷에 일치하는 필드의 값을 ,선언시켰던 클래스(UserDomainClass)가 가지고 있는 값과 매핑시켜서 전달하게 된다.
         // 전달된 유저 객체를 DAOService 에 save 메소드에 전달하게 되면 저장 작업이 완료된다.
+        // @Valid 어노테이션을 통해 User 도메인 클래스에 선언해놓은 조건에 따라 유효성 검사를 수행하게 된다.
         User savedUser = service.save(user);
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/{id}")
