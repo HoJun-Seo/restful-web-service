@@ -16,4 +16,7 @@ public class User {
     private String name;
     @Past // 과제 데이터만 사용할 수 있다는 제약 부여
     private Date joinDate;
+
+    private String password;
+    private String ssn;
 }
