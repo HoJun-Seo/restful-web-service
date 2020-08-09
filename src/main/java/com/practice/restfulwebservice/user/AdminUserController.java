@@ -4,6 +4,8 @@ package com.practice.restfulwebservice.user;
 import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
+import org.springframework.beans.BeanUtils; // 스프링 부트에서 Bean 들 간에 연관된 작업을 도와주는 유틸 클래스(인스턴스 생성, 복사 등등)
+//복사의 경우 두 인스턴스 간의 공통적인 필드 속성이 있을 경우 해당하는 값을 카피하는 기능 또한 포함되어 있다.
 import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -36,8 +38,9 @@ public class AdminUserController {
         return mappingJacksonValue;
     }
 
-    @GetMapping("/users/{id}") // 정보 필터링이 적용되는 것 없이 모든 정보를 출력할 수 있게끔 만들어보자.
-    public MappingJacksonValue retrieveUser(@PathVariable int id){ // 필터 적용을 위한 반환 타입 변경(MappingJacksonValue)
+    @GetMapping("/v1/users/{id}") // 정보 필터링이 적용되는 것 없이 모든 정보를 출력할 수 있게끔 만들어보자.
+    // uri 에서 v1 은 해당 메소드에 버전을 부여시킨 것이다.
+    public MappingJacksonValue retrieveUserV1(@PathVariable int id){ // 필터 적용을 위한 반환 타입 변경(MappingJacksonValue)
         User user = service.findOne(id);
         if(user == null){
             throw  new UserNOTFoundException(String.format("ID[%s] not found", id));
@@ -51,6 +54,28 @@ public class AdminUserController {
         // 유저 도메인 객체에서 어노테이션으로 선언한 UserInfo 필드 값을 사용하였다.
 
         MappingJacksonValue mappingJacksonValue = new MappingJacksonValue(user);
+        mappingJacksonValue.setFilters(filterProvider);
+
+        return mappingJacksonValue;
+    }
+
+    @GetMapping("/v2/users/{id}")
+    public MappingJacksonValue retrieveUserV2(@PathVariable int id){
+        User user = service.findOne(id);
+        if(user == null){
+            throw  new UserNOTFoundException(String.format("ID[%s] not found", id));
+        }
+        // User -> User2
+        UserV2 userV2 = new UserV2();
+        BeanUtils.copyProperties(user, userV2); // 검색한 user 인스턴스 값을 userV2 로 복사한다.
+        userV2.setGrade("VIP");
+
+        SimpleBeanPropertyFilter filter = SimpleBeanPropertyFilter
+                .filterOutAllExcept("id", "name", "joinDate", "grade", "ssn");
+        FilterProvider filterProvider = new SimpleFilterProvider().addFilter("UserInfoV2", filter);
+
+
+        MappingJacksonValue mappingJacksonValue = new MappingJacksonValue(userV2);
         mappingJacksonValue.setFilters(filterProvider);
 
         return mappingJacksonValue;

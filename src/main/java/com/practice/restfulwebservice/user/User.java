@@ -3,6 +3,7 @@ package com.practice.restfulwebservice.user;
 import com.fasterxml.jackson.annotation.JsonFilter;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.Past;
 import javax.validation.constraints.Size;
@@ -10,8 +11,9 @@ import java.util.Date;
 
 @Data
 @AllArgsConstructor
-//@JsonIgnoreProperties(value = {"password", "ssn"})
+@NoArgsConstructor
 @JsonFilter("UserInfo")
+//@JsonIgnoreProperties(value = {"password", "ssn"})
 public class User {
     private Integer id;
 
