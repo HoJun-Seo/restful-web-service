@@ -38,8 +38,13 @@ public class AdminUserController {
         return mappingJacksonValue;
     }
 
-    @GetMapping("/v1/users/{id}") // 정보 필터링이 적용되는 것 없이 모든 정보를 출력할 수 있게끔 만들어보자.
+    //@GetMapping("/v1/users/{id}") // 정보 필터링이 적용되는 것 없이 모든 정보를 출력할 수 있게끔 만들어보자.
     // uri 에서 v1 은 해당 메소드에 버전을 부여시킨 것이다.
+    //@GetMapping(value = "/users/{id}/", params = "version=1") //Request parameter 를 이용한 방법
+    // 우리가 호출하고자 하는 데이터 값 뒤에 버전 정보가 추가로 전달되어야 한다.(id 경로 뒤에 / 추가)
+    // 사용하려고 하는 uri 값 뒤에 request parameter 값을 전달해줌으로서 1.0 버전인지 2.0 버전인지 명시하는 방법이다.
+    //@GetMapping(value = "/users/{id}", headers = "X-API-VERSION=1")
+    @GetMapping(value = "/users/{id}", produces = "application/vnd.company.appv1+json")
     public MappingJacksonValue retrieveUserV1(@PathVariable int id){ // 필터 적용을 위한 반환 타입 변경(MappingJacksonValue)
         User user = service.findOne(id);
         if(user == null){
@@ -59,7 +64,10 @@ public class AdminUserController {
         return mappingJacksonValue;
     }
 
-    @GetMapping("/v2/users/{id}")
+    //@GetMapping("/v2/users/{id}")
+    //@GetMapping(value = "/users/{id}/", params = "version=2")
+    //@GetMapping(value = "/users/{id}", headers = "X-API-VERSION=2")
+    @GetMapping(value = "/users/{id}", produces = "application/vnd.company.appv2+json")
     public MappingJacksonValue retrieveUserV2(@PathVariable int id){
         User user = service.findOne(id);
         if(user == null){

@@ -1,5 +1,7 @@
 package com.practice.restfulwebservice.user;
 
+import org.springframework.hateoas.Resource;
+import org.springframework.hateoas.mvc.ControllerLinkBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -7,6 +9,9 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
+
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 @RestController
 public class UserController {
@@ -30,12 +35,20 @@ public class UserController {
     }
     //GET /users/1 or /users/10 -> String // id 값을 정수형으로 작성하였다고 해도 서버측(Controller)에 전달될 때는 문자열 형태로 전달되게 된다.
     @GetMapping("/users/{id}")
-    public User retrieveUser(@PathVariable int id){ // int 형으로 선언해 놓으면 String 으로 변환되었던 데이터 값이 자동으로 정수형으로 매핑되어 사용할수 있게 된다.
+    public Resource<User> retrieveUser(@PathVariable int id){ // int 형으로 선언해 놓으면 String 으로 변환되었던 데이터 값이 자동으로 정수형으로 매핑되어 사용할수 있게 된다.
         User user = service.findOne(id);
         if(user == null){
             throw  new UserNOTFoundException(String.format("ID[%s] not found", id));
         }
-        return user;
+
+        // HATEOAS
+        Resource<User> resource = new Resource<>(user);
+        // 유저 값을 반환시킬 때 유저가 사용할 수 있는 추가적인 정보 링크를 Hypermedia type 으로 넣어놓는다.
+        ControllerLinkBuilder linkTo = linkTo(methodOn(this.getClass()).retrieveAllUsers());
+        resource.add(linkTo.withRel("all-users"));
+
+
+        return resource;
     }
     @PostMapping("/users")
     public ResponseEntity<User> createUser(@Valid @RequestBody User user){ // 클라이언트로부터 form data type 이 아닌 json, xml 과 같이 object 형태의 데이터를 받기 위해서는 매개변수 타입에 @RequestBody 어노테이션을 선언해 주어야 한다.

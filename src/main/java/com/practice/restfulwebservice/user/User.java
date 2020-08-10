@@ -12,7 +12,7 @@ import java.util.Date;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@JsonFilter("UserInfo")
+//@JsonFilter("UserInfo")
 //@JsonIgnoreProperties(value = {"password", "ssn"})
 public class User {
     private Integer id;
