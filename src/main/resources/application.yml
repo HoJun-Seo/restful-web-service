@@ -11,15 +11,23 @@ spring:
   devtools:
     livereload:
       enabled: true
+  h2:
+    console:
+      enabled: true
 
-  security:
-    user:
-      name: username
-      password: zxc3226659
+  jpa:
+    show-sql: true
+
+#  security:
+#    user:
+#      name: username
+#      password: zxc3226659
+
 management:
   endpoints:
     web:
       exposure:
         include: "*"
+
 
 
