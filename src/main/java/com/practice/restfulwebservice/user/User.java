@@ -7,6 +7,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 import javax.validation.constraints.Past;
 import javax.validation.constraints.Size;
 import java.util.Date;
@@ -17,7 +20,10 @@ import java.util.Date;
 //@JsonFilter("UserInfo")
 //@JsonIgnoreProperties(value = {"password", "ssn"})
 @ApiModel(description = "사용자 상세 정보를 위한 도메인 객체") // Swagger 커스터마이징
+@Entity
 public class User {
+    @Id
+    @GeneratedValue
     private Integer id;
 
     @Size(min = 2, message = "Name 은 2글자 이상 입력해주세요") // 속성 값의 길이가 최소 2를 넘어야 한다는 제약 부여
