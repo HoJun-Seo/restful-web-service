@@ -3,11 +3,12 @@ package com.practice.restfulwebservice.user;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Resource;
 import org.springframework.hateoas.mvc.ControllerLinkBuilder;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import javax.validation.Valid;
+import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 
@@ -41,5 +42,23 @@ public class UserJpaController {
         //return user.get(); // 데이터 반환값이 Optional 타입이라고 메소드의 반환 타입을 똑같이 맞춰주려고 할 필요 없이
         // 위와 같이 get() 메소드를 활용해주면 된다.
         //get() 메소드는 T 타입의 반환값, 즉 위의 user 데이터 초기화에서 User 타입의 데이터를 가진다.
+    }
+
+    @DeleteMapping("/users/{id}")
+    public void deleteUser(@PathVariable int id){
+        userRepository.deleteById(id);
+    }
+
+    @PostMapping("/users")
+    public ResponseEntity<User> createUser(@Valid @RequestBody User user){
+        User savedUser = userRepository.save(user);
+
+        // 생성된 데이터에 한 하여 id 값을 자동으로 지정해준다
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(savedUser.getId())
+                .toUri();
+
+        return ResponseEntity.created(location).build();
     }
 }
