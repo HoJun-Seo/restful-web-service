@@ -61,4 +61,17 @@ public class UserJpaController {
 
         return ResponseEntity.created(location).build();
     }
+
+    // /jpa/users/90001/posts
+    @GetMapping("/users/{id}/posts")
+    public List<Post> retrieveAllPostByUser(@PathVariable int id){
+        // id 값에 해당하는 것은 사용자의 id 이므로 이것을 이용하여 실제 해당하는 사용자가 존재하는지 그렇지 않은지 검색해야 하므로 Optional 타입의 데이터를 사용해야 한다.
+        Optional<User> user = userRepository.findById(id);
+
+        if(!user.isPresent()){ // 해당하는 id 값의 학생정보가 존재하지 않을 경우 예외 반환
+            throw new UserNOTFoundException(String.format("ID[%s] not found"));
+        }
+
+        return user.get().getPosts();
+    }
 }
