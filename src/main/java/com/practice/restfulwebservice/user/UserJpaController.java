@@ -21,6 +21,9 @@ public class UserJpaController {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private PostRepository postRepository;
+
     @GetMapping("/users")
     public List<User> retrieveAllUsers(){
        return userRepository.findAll(); // 특별한 조건없이 모든 데이터를 반환한다.
@@ -73,5 +76,29 @@ public class UserJpaController {
         }
 
         return user.get().getPosts();
+    }
+
+    @PostMapping("/users/{id}/posts")
+    public ResponseEntity<Post> createPost(@PathVariable int id, @RequestBody Post post){
+        // Post 객체에 아직 Validation 을 추가하지 않은 상태이기 때문에 @Valid 어노테이션을 추가할 수 없다.
+
+        // 사용자 정보를 검색하여 해당 정보의 id 값을 post 에 지정해주어야 한다.
+        // 기본적으로 Post 객체에는 유저 정보가 함께 포함되어 있다.
+        Optional<User> user = userRepository.findById(id);
+
+        if(!user.isPresent()){ // 해당하는 id 값의 학생정보가 존재하지 않을 경우 예외 반환
+            throw new UserNOTFoundException(String.format("ID[%s] not found"));
+        }
+
+        post.setUser(user.get()); // 사용자 정보 지정
+        Post savedPost = postRepository.save(post);
+
+        // 생성된 데이터에 한 하여 id 값을 자동으로 지정해준다
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(savedPost.getId())
+                .toUri();
+
+        return ResponseEntity.created(location).build();
     }
 }
